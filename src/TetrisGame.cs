@@ -71,7 +71,7 @@ namespace Tetris {
 
             //current tetromino move left-right
             moveTimer += delta;
-            if (moveTimer > 0.1) {
+            if (moveTimer > 0.1 && gravityTimer != 0) {
                 if (input.IsKeyDown(Keys.D) && !collision["right"]) {
                     position.X += 1;
                     moveTimer = 0;
