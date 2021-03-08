@@ -94,6 +94,6 @@ namespace Tetris
                 toReturnConverted.Add(new Vector2(elem.Item1, elem.Item2));
             return toReturnConverted;
         }
-
+    
     }
 }

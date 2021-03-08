@@ -6,8 +6,8 @@ namespace Tetris {
     class GameLoop : Game {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-
         TetrisGame tetrisGame;
+        MainMenu mainMenu = new MainMenu();
 
         public GameLoop() {
             graphics = new GraphicsDeviceManager(this);
@@ -24,12 +24,26 @@ namespace Tetris {
             var block = Content.Load<Texture2D>("WhiteBlock");
             var border = Content.Load<Texture2D>("WhiteBorder");
             tetrisGame = new TetrisGame(block, border);
+            switch(Global.scene) {
+                case 0:
+                    mainMenu.Start(Content);
+                    break;
+                case 1:
+                    break;
+            }
         }
 
         protected override void Update(GameTime gameTime) {
             var delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            tetrisGame.Update(delta);
+            switch(Global.scene) {
+                case 0:
+                    mainMenu.Update(delta);
+                    break;
+                case 1:
+                    tetrisGame.Update(delta);
+                    break;
+            }
 
             base.Update(gameTime);
         }
@@ -39,7 +53,14 @@ namespace Tetris {
 
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp);
 
-            tetrisGame.Draw(spriteBatch);
+            switch(Global.scene) {
+                case 0:
+                    mainMenu.Draw(spriteBatch);
+                    break;
+                case 1:
+                    tetrisGame.Draw(spriteBatch);
+                    break;
+            }
 
             spriteBatch.End();
 
