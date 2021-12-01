@@ -4,23 +4,28 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System;
 
-namespace Tetris {
-    class Button {
+namespace Tetris
+{
+    class Button
+    {
         Texture2D texture;
         Rectangle rect;
 
-        public Button(Texture2D texture, Rectangle rect) {
+        public Button(Texture2D texture, Rectangle rect)
+        {
             this.texture = texture;
             this.rect = rect;
         }
 
-        public void Draw(SpriteBatch sb) {
+        public void Draw(SpriteBatch sb)
+        {
             sb.Draw(texture, rect, Color.White);
         }
 
-        public bool Pressed() {
+        public bool Pressed()
+        {
             var ms = Mouse.GetState();
-            return rect.Contains(ms.Position) && ms.LeftButton == ButtonState.Pressed;
+            return rect.Contains(Global.mousePosition) && ms.LeftButton == ButtonState.Pressed;
         }
     }
 }

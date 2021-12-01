@@ -1,78 +1,76 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
-namespace Tetris {
-    class GameLoop : Game {
+namespace Tetris
+{
+    class GameLoop : Game
+    {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-        TetrisGame tetrisGame;
-        MainMenu mainMenu = new MainMenu();
+        Window window;
 
-        public GameLoop() {
+        public GameLoop()
+        {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            Window.AllowUserResizing = true;
         }
 
-        protected override void Initialize() {
+        protected override void Initialize()
+        {
             base.Initialize();
         }
 
-        protected override void LoadContent() {
+        protected override void LoadContent()
+        {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            var block = Content.Load<Texture2D>("WhiteBlock");
-            var border = Content.Load<Texture2D>("WhiteBorder");
-            tetrisGame = new TetrisGame(block, border);
-            switch(Global.scene) {
-                case 0:
-                    mainMenu.Start(Content);
-                    break;
-                case 1:
-                    break;
-            }
+            window = new Window(
+               Global.resolution,
+               WindowAspect.Keep,
+               new RenderTarget2D(GraphicsDevice, Global.resolution.X, Global.resolution.Y)
+           );
+
+            Global.content = Content;
+            Global.scene = new MainMenu();
         }
 
-        protected override void Update(GameTime gameTime) {
+        protected override void Update(GameTime gameTime)
+        {
             var delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            switch(Global.scene) {
-                case 0:
-                    mainMenu.Update(delta);
-                    break;
-                case 1:
-                    tetrisGame.Update(delta);
-                    break;
-            }
+            Global.scene.Update(delta);
+            window.UpdateSize(GraphicsDevice);
+            window.resolution = Global.resolution;
+            window.cameraPosition = new Point(-1) * Global.cameraPosition;
+            Global.mousePosition = window.MousePosition();
 
             base.Update(gameTime);
         }
 
-        protected override void Draw(GameTime gameTime) {
-            GraphicsDevice.Clear(Color.Black);
-
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp);
-
-            switch(Global.scene) {
-                case 0:
-                    mainMenu.Draw(spriteBatch);
-                    break;
-                case 1:
-                    tetrisGame.Draw(spriteBatch);
-                    break;
-            }
-
-            spriteBatch.End();
+        protected override void Draw(GameTime gameTime)
+        {
+            window.Draw(spriteBatch, GraphicsDevice, () => Global.scene.Draw(spriteBatch));
 
             base.Draw(gameTime);
         }
     }
-    
-    public static class Program {
+
+    public static class Program
+    {
         [STAThread]
-        static void Main() {
+        static void Main()
+        {
             using (var game = new GameLoop())
                 game.Run();
         }
+    }
+
+    public interface Scene
+    {
+        void Update(float delta);
+        void Draw(SpriteBatch sb);
     }
 }
